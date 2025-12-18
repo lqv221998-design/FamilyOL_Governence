@@ -1,8 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Parser from 'rss-parser';
 import DOMPurify from 'isomorphic-dompurify';
-
-export const dynamic = 'force-dynamic'; // Always fetch fresh data
 
 const parser = new Parser({
     timeout: 5000,
@@ -11,12 +9,11 @@ const parser = new Parser({
     },
 });
 
-export async function GET(req: NextRequest) {
-    const { searchParams } = new URL(req.url);
-    const url = searchParams.get('url');
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+    const { url } = req.query;
 
-    if (!url) {
-        return NextResponse.json({ error: 'Missing URL parameter' }, { status: 400 });
+    if (!url || typeof url !== 'string') {
+        return res.status(400).json({ error: 'Missing URL parameter' });
     }
 
     try {
@@ -37,12 +34,12 @@ export async function GET(req: NextRequest) {
             })),
         };
 
-        return NextResponse.json(cleanFeed);
+        return res.status(200).json(cleanFeed);
     } catch (error: any) {
         console.error('RSS Fetch Error:', error);
-        return NextResponse.json(
-            { error: 'Failed to fetch RSS feed', details: error.message },
-            { status: 500 }
-        );
+        return res.status(500).json({ 
+            error: 'Failed to fetch RSS feed', 
+            details: error.message 
+        });
     }
 }

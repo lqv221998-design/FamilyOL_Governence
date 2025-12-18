@@ -1,6 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/shared/db/dexie';
-import { Feed } from '@/entities/feed/model/schema';
+import type { Feed } from '@/entities/feed/model/schema';
 
 export function useFeeds() {
     const feeds = useLiveQuery(() => db.feeds.toArray());

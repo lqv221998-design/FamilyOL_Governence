@@ -6,16 +6,18 @@ import { MasonryGrid } from "@/features/news-feed/ui/MasonryGrid";
 import { useArticles } from "@/features/news-feed/api/useArticles";
 import { useFeeds } from "@/features/feed-manager/api/useFeeds";
 
+import { DebugPanel } from '@/shared/ui/DebugPanel';
+
 export default function Home() {
   const [selectedFeedId, setSelectedFeedId] = useState<string | undefined>(undefined);
   const { articles, isLoading } = useArticles(selectedFeedId);
   const { feeds } = useFeeds();
 
-  const getFeed = (id: string) => feeds?.find(f => f.id === id);
+  const getFeed = (id: string) => feeds?.find((f) => f.id === id);
 
   return (
     <main className="app-container">
-      <Sidebar />
+      <Sidebar onSelect={setSelectedFeedId} selectedId={selectedFeedId} />
       <section className="content-area glass-panel">
         <header className="content-header">
           <h2>{selectedFeedId ? getFeed(selectedFeedId)?.title : 'Latest News'}</h2>
@@ -25,6 +27,7 @@ export default function Home() {
         </header>
 
         <div className="articles-grid">
+          {/* ... */}
           {isLoading ? (
             <p className="loading">Loading news...</p>
           ) : articles && articles.length > 0 ? (
@@ -36,6 +39,8 @@ export default function Home() {
           )}
         </div>
       </section>
+
+      <DebugPanel />
 
       <style jsx global>{`
         .app-container {

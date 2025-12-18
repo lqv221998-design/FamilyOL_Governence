@@ -1,36 +1,41 @@
 import { Article, Feed } from '@/entities/feed/model/schema';
 
 interface FeedCardProps {
-    article: Article;
-    feedTitle: string;
-    onClick: () => void;
+  article: Article;
+  feedTitle: string;
+  onClick: () => void;
 }
 
 export function FeedCard({ article, feedTitle, onClick }: FeedCardProps) {
-    // Extract first image from content if snippet or content has it (simple regex or DOM parser)
-    // For now, assume no image or basic parsing logic if needed.
-    // We'll focus on text layout first.
+  // Extract first image from content if snippet or content has it (simple regex or DOM parser)
+  // For now, assume no image or basic parsing logic if needed.
+  // We'll focus on text layout first.
 
-    const dateStr = new Date(article.publishedAt).toLocaleDateString(undefined, {
-        month: 'short', day: 'numeric'
-    });
+  const dateStr = new Date(article.publishedAt).toLocaleDateString(undefined, {
+    month: 'short', day: 'numeric'
+  });
 
-    return (
-        <article className="feed-card glass-panel" onClick={onClick}>
-            <div className="card-content">
-                <div className="card-meta">
-                    <span className="feed-source">{feedTitle}</span>
-                    <span className="article-date">{dateStr}</span>
-                </div>
-                <h3 className="card-title">{article.title}</h3>
-                <p className="card-snippet">{article.snippet}</p>
-            </div>
+  return (
+    <article className="feed-card glass-panel" onClick={onClick}>
+      {article.imageUrl && (
+        <div className="card-image-container">
+          <img src={article.imageUrl} alt="" className="card-image" loading="lazy" />
+        </div>
+      )}
+      <div className="card-content">
+        <div className="card-meta">
+          <span className="feed-source">{feedTitle}</span>
+          <span className="article-date">{dateStr}</span>
+        </div>
+        <h3 className="card-title">{article.title}</h3>
+        <p className="card-snippet">{article.snippet}</p>
+      </div>
 
-            <div className="card-actions">
-                {/* Future: Save/Read Later buttons */}
-            </div>
+      <div className="card-actions">
+        {/* Future: Save/Read Later buttons */}
+      </div>
 
-            <style jsx>{`
+      <style jsx>{`
         .feed-card {
           margin-bottom: 1.5rem;
           break-inside: avoid; /* For Masonry */
@@ -43,6 +48,14 @@ export function FeedCard({ article, feedTitle, onClick }: FeedCardProps) {
           transform: translateY(-4px);
           box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
+        .card-image-container {
+            width: 100%; height: 180px; overflow: hidden;
+        }
+        .card-image {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 0.3s;
+        }
+        .feed-card:hover .card-image { transform: scale(1.05); }
         .card-content { padding: 1.25rem; }
         .card-meta {
           display: flex; justify-content: space-between;
@@ -60,6 +73,6 @@ export function FeedCard({ article, feedTitle, onClick }: FeedCardProps) {
           display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
         }
       `}</style>
-        </article>
-    );
+    </article>
+  );
 }

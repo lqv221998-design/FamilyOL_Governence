@@ -4,14 +4,19 @@ import { AddFeedModal } from './AddFeedModal';
 import { DailyBriefing } from '@/features/ai-briefing/ui/DailyBriefing';
 import { PlusIcon, RssIcon, TrashIcon } from '@heroicons/react/24/outline'; // Check import path for v2
 
-export function Sidebar() {
+interface SidebarProps {
+    onSelect: (id: string | undefined) => void;
+    selectedId?: string;
+}
+
+export function Sidebar({ onSelect, selectedId }: SidebarProps) {
     const { feeds, removeFeed } = useFeeds();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     return (
         <aside className="sidebar glass-panel">
             <div className="sidebar-header">
-                <h1>RSS Reader</h1>
+                <h1 onClick={() => onSelect(undefined)} style={{ cursor: 'pointer' }}>RSS Reader</h1>
                 <button onClick={() => setIsModalOpen(true)} className="btn-icon" aria-label="Add Feed">
                     <PlusIcon className="icon" />
                 </button>
@@ -24,7 +29,11 @@ export function Sidebar() {
                 ) : (
                     <ul>
                         {feeds.map((feed) => (
-                            <li key={feed.id} className="feed-item">
+                            <li
+                                key={feed.id}
+                                className={`feed-item ${selectedId === feed.id ? 'active' : ''}`}
+                                onClick={() => onSelect(feed.id)}
+                            >
                                 <div className="feed-info">
                                     {feed.iconUrl ? (
                                         <img src={feed.iconUrl} alt="" className="feed-icon" />
@@ -87,7 +96,8 @@ export function Sidebar() {
           padding: 0.5rem; border-radius: 6px; cursor: pointer;
           transition: background 0.2s;
         }
-        .feed-item:hover { background: var(--bg-secondary); }
+        .feed-item:hover, .feed-item.active { background: var(--bg-secondary); }
+        .feed-item.active .feed-title { color: var(--accent); font-weight: 600; }
         .feed-info { display: flex; align-items: center; gap: 0.75rem; overflow: hidden; }
         .feed-icon { width: 20px; height: 20px; border-radius: 4px; object-fit: cover; }
         .feed-icon-placeholder { width: 20px; height: 20px; color: var(--text-secondary); }
